@@ -1,0 +1,103 @@
+# ======================================
+# Go 语言专属忽略规则
+# ======================================
+# Go 编译生成的可执行文件 (无后缀名)
+# 匹配项目根目录下与目录同名的二进制文件
+/[a-zA-Z0-9_-]
+
+# Go 1.16+ 模块缓存、下载的依赖包
+vendor/
+go.sum
+/pkg/
+/bin/
+
+# Go 测试覆盖率文件
+coverage.out
+coverage.html
+
+# Go 编译时的临时文件
+*.test
+*.prof
+
+# Go 工作区配置
+go.work
+go.work.sum
+
+# ======================================
+# 常用编辑器 / IDE 配置
+# ======================================
+# VS Code
+.vscode/
+*.code-workspace
+.history/
+
+# GoLand / IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Vim / Sublime
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# ======================================
+# 系统自动生成文件
+# ======================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+
+# ======================================
+# 环境变量 / 配置 / 敏感文件
+# ======================================
+# 环境变量配置（数据库密码、密钥等）
+.env
+.env.local
+.env.development
+.env.production
+
+# 配置文件（本地调试用）
+config.local.yaml
+config.local.toml
+config.local.json
+
+# 密钥、证书文件
+*.pem
+*.key
+*.crt
+
+# ======================================
+# 日志 / 临时数据 / 构建目录
+# ======================================
+# 日志文件
+logs/
+*.log
+temp/
+tmp/
+
+# 本地构建产物
+dist/
+build/
+out/
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
