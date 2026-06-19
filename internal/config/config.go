@@ -11,12 +11,11 @@ const (
 
 // Config holds the configuration values for the application.
 type Config struct {
-	// Server configuration
-	Server ServerConfig `mapstructure:"server"`
+	App AppConfig `mapstructure:"app"`
 	MySQL  MySQLConfig  `mapstructure:"mysql"`
 }
 
-type ServerConfig struct {
+type AppConfig struct {
 	Port int         `mapstructure:"port" validate:"required,min=1,max=65535"`
 	Mode Environment `mapstructure:"mode" validate:"required,oneof=debug test release"`
 }
@@ -35,10 +34,10 @@ type MySQLConfig struct {
 
 // IsReleaseMode checks if the server is running in release mode.
 func (c *Config) IsReleaseMode() bool {
-	return c.Server.Mode == Release
+	return c.App.Mode == Release
 }
 
 // IsDebugMode checks if the server is running in debug mode.
 func (c *Config) IsDebugMode() bool {
-	return c.Server.Mode == Debug
+	return c.App.Mode == Debug
 }

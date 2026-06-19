@@ -12,6 +12,7 @@ import (
 // Load loads the configuration from the .env file and environment variables.
 func Load() (*Config, error) {
 	setDefaults() // Set default values for all configuration fields
+	
 	// Load .env file if it exists
 	if err := loadEnvFile(); err != nil && !os.IsNotExist(err) {
 		return nil, err
@@ -32,9 +33,9 @@ func Load() (*Config, error) {
 }
 
 func setDefaults() {
-	// server defaults
-	viper.SetDefault("server.port", "8080")
-	viper.SetDefault("server.mode", Debug)
+	// app defaults
+	viper.SetDefault("app.port", "8080")
+	viper.SetDefault("app.mode", Debug)
 
 	// database defaults
 	viper.SetDefault("mysql.host", "localhost")
