@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 // Load loads the configuration from the .env file and environment variables.
@@ -37,20 +36,20 @@ func Load() (*Config, error) {
 }
 
 func setDefaults() {
-	// App defaults
-	viper.SetDefault("app.port", 8080)
-	viper.SetDefault("app.mode", Release)
+	// App
+	viper.SetDefault("app_port", 8080)
+	viper.SetDefault("app_mode", Release)
 
-	// Database defaults
-	viper.SetDefault("mysql.host", "localhost")
-	viper.SetDefault("mysql.port", 3306)
-	viper.SetDefault("mysql.user", "root")
-	viper.SetDefault("mysql.password", "")
-	viper.SetDefault("mysql.name", "stride_db")
-	viper.SetDefault("mysql.params", "charset=utf8mb4&parseTime=True&loc=Local")
-	viper.SetDefault("mysql.max_idle", 10)
-	viper.SetDefault("mysql.max_open", 100)
-	viper.SetDefault("mysql.conn_max_lifetime_second", 3600)
+	// Database
+	viper.SetDefault("db_host", "localhost")
+	viper.SetDefault("db_port", 3306)
+	viper.SetDefault("db_user", "root")
+	viper.SetDefault("db_password", "")
+	viper.SetDefault("db_name", "stride_db")
+	viper.SetDefault("db_params", "charset=utf8mb4&parseTime=True&loc=Local")
+	viper.SetDefault("db_max_idle", 10)
+	viper.SetDefault("db_max_open", 100)
+	viper.SetDefault("db_conn_max_lifetime_second", 3600)
 }
 
 // loadEnvFile loads the .env file using godotenv.
@@ -65,6 +64,5 @@ func loadEnvFile() error {
 // bindEnvVars binds environment variables to viper keys.
 func bindEnvVars() {
 	viper.SetEnvPrefix("STRIDE_BACKEND")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "__"))
 	viper.AutomaticEnv()
 }
