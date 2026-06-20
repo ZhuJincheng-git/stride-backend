@@ -7,6 +7,12 @@ import (
 	"path/filepath"
 )
 
+var envFileCandidates = []string{
+	// High priority: .env.local, then .env
+	".env.local",
+	".env",
+}
+
 // Load loads the configuration from the .env file and environment variables.
 func Load() (*Config, error) {
 	// Set default values for all configuration fields
@@ -51,11 +57,33 @@ func setDefaults() {
 	viper.SetDefault("db_conn_max_lifetime_second", 3600)
 }
 
+// findUpwards searches for the target file starting from the startDir and moving up the directory tree.
+func findUpwards(startDir, targetFile string) string {
+	currentDir := startDir
+	for {
+		candidatePath := filepath.Join(currentDir, targetFile)
+		if info, err := os.Stat(candidatePath); err == nil && !info.IsDir() {
+			return candidatePath
+		}
+		parentDir := filepath.Dir(currentDir)
+		if parentDir == currentDir {
+			return ""
+		}
+		currentDir = parentDir
+	}
+}
+
 // loadEnvFile loads the .env file using godotenv.
 func loadEnvFile() error {
-	envPath := filepath.Join(".", ".env")
-	if _, err := os.Stat(envPath); err == nil {
-		return godotenv.Load(envPath)
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	for _, envFile := range envFileCandidates {
+		envPath := findUpwards(cwd, envFile)
+		if envPath != "" {
+			return godotenv.Load(envPath)
+		}
 	}
 	return nil
 }
