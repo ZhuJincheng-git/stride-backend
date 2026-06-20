@@ -1,4 +1,3 @@
-// ./internal/config/loader.go
 package config
 
 import (

@@ -1,4 +1,3 @@
-// ./internal/config/validation.go
 package config
 
 import (
