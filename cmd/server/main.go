@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/ZhuJincheng-git/stride-backend/internal/config"
 	"log"
+
+	"github.com/ZhuJincheng-git/stride-backend/internal/config"
+	"github.com/ZhuJincheng-git/stride-backend/internal/database"
 )
 
 func main() {
@@ -12,4 +14,9 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Println(cfg)
+
+	_, err = database.Open(cfg)
+	if err != nil {
+		log.Fatalf("db: %v", err)
+	}
 }
