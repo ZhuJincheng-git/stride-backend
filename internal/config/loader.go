@@ -1,10 +1,12 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
-	"github.com/spf13/viper"
+	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
 )
 
 var envFileCandidates = []string{
@@ -19,9 +21,7 @@ func Load() (*Config, error) {
 	setDefaults()
 	
 	// Load .env file if it exists
-	if err := loadEnvFile(); err != nil && !os.IsNotExist(err) {
-		return nil, err
-	}
+	loadEnvFile()
 
 	// Bind environment variables to viper
 	bindEnvVars() 
@@ -74,22 +74,21 @@ func findUpwards(startDir, targetFile string) string {
 }
 
 // loadEnvFile loads the .env file using godotenv.
-func loadEnvFile() error {
+func loadEnvFile() {
 	cwd, err := os.Getwd()
 	if err != nil {
-		return err
+		return
 	}
 	for _, envFile := range envFileCandidates {
-		envPath := findUpwards(cwd, envFile)
-		if envPath != "" {
-			return godotenv.Load(envPath)
+		if envPath := findUpwards(cwd, envFile); envPath != "" {
+			if err := godotenv.Load(envPath); err != nil {
+				log.Printf("config: fail to load %s: %v", envPath, err)
+			}
 		}
 	}
-	return nil
 }
 
 // bindEnvVars binds environment variables to viper keys.
 func bindEnvVars() {
-	viper.SetEnvPrefix("STRIDE_BACKEND")
 	viper.AutomaticEnv()
 }
