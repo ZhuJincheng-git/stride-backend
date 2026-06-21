@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/ZhuJincheng-git/stride-backend/internal/config"
@@ -11,9 +10,8 @@ import (
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("config: %v", err)
 	}
-	fmt.Println(cfg)
 
 	_, err = database.Open(cfg)
 	if err != nil {
