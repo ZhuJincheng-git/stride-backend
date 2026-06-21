@@ -90,6 +90,5 @@ func loadEnvFile() {
 
 // bindEnvVars binds environment variables to viper keys.
 func bindEnvVars() {
-	viper.SetEnvPrefix("STRIDE_BACKEND")
 	viper.AutomaticEnv()
 }
