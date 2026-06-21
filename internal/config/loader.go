@@ -55,6 +55,9 @@ func setDefaults() {
 	viper.SetDefault("db_max_idle", 10)
 	viper.SetDefault("db_max_open", 100)
 	viper.SetDefault("db_conn_max_lifetime_second", 3600)
+
+	// Logging
+	viper.SetDefault("log_level", "info")
 }
 
 // findUpwards searches for the target file starting from the startDir and moving up the directory tree.

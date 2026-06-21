@@ -29,6 +29,9 @@ type Config struct {
 	DBMaxIdle               int    `mapstructure:"db_max_idle"`
 	DBMaxOpen               int    `mapstructure:"db_max_open"`
 	DBConnMaxLifetimeSecond int32  `mapstructure:"db_conn_max_lifetime_second"`
+
+	// Logging
+	LogLevel string `mapstructure:"log_level" validateL:"oneof=debug info warn error"`
 }
 
 // IsReleaseMode checks if the server is running in release mode.
