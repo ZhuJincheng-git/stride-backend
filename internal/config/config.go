@@ -23,7 +23,7 @@ type Config struct {
 	DBHost                  string `mapstructure:"db_host" validate:"required"`
 	DBPort                  int    `mapstructure:"db_port" validate:"required,min=1,max=65535"`
 	DBUser                  string `mapstructure:"db_user" validate:"required"`
-	DBPassword              string `mapstructure:"db_password" validate:"required"`
+	DBPassword              string `mapstructure:"db_password"`
 	DBName                  string `mapstructure:"db_name" validate:"required"`
 	DBParams                string `mapstructure:"db_params"`
 	DBMaxIdle               int    `mapstructure:"db_max_idle"`
