@@ -13,8 +13,14 @@ func main() {
 		log.Fatalf("config: %v", err)
 	}
 
-	_, err = database.Open(cfg)
+	db, err := database.Open(cfg)
 	if err != nil {
 		log.Fatalf("db: %v", err)
 	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatalf("db handle: %v", err)
+	}
+	defer sqlDB.Close()
 }
