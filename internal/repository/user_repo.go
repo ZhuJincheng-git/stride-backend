@@ -2,8 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
-	
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
@@ -17,11 +16,11 @@ type UserRepository interface {
 	GetByEmail(ctx context.Context, email string) (*model.User, error)
 }
 
-type userRepo struct { db *gorm.DB }
+type userRepo struct{ db *gorm.DB }
 
 func NewUserRepository(db *gorm.DB) UserRepository { return &userRepo{db: db} }
 
-func (r *userRepo) 	Create(ctx context.Context, u *model.User) error {
+func (r *userRepo) Create(ctx context.Context, u *model.User) error {
 	return r.db.WithContext(ctx).Create(u).Error
 }
 
@@ -48,4 +47,3 @@ func (r *userRepo) GetByEmail(ctx context.Context, email string) (*model.User, e
 	}
 	return &u, nil
 }
-
