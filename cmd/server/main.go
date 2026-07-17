@@ -5,6 +5,7 @@ import (
 
 	"github.com/ZhuJincheng-git/stride-backend/internal/config"
 	"github.com/ZhuJincheng-git/stride-backend/internal/database"
+	"github.com/ZhuJincheng-git/stride-backend/internal/model"
 )
 
 func main() {
@@ -23,4 +24,8 @@ func main() {
 		log.Fatalf("db handle: %v", err)
 	}
 	defer sqlDB.Close()
+
+	if err := model.AutoMigrate(db); err != nil {
+		log.Fatalf("migrate: %v", err)
+	}
 }
