@@ -8,7 +8,6 @@
 # Go 1.16+ 模块缓存、下载的依赖包
 vendor/
 go.sum
-/pkg/
 /bin/
 
 # Go 测试覆盖率文件
