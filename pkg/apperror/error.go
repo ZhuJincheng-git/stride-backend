@@ -3,9 +3,6 @@ package apperror
 import (
 	"errors"
 	"fmt"
-	"net/http"
-
-	"golang.org/x/text/message"
 )
 
 type Code string
@@ -40,3 +37,12 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("%s: %s", e.Code, e.Message)
 }
 
+func (e *Error) Unwrap() error { return e.cause }
+
+func AsAppError(err error) (*Error, bool) {
+	var ae *Error
+	if errors.As(err, &ae) {
+		return ae, true
+	}
+	return  nil, false
+}
