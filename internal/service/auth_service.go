@@ -10,6 +10,7 @@ import (
 	"github.com/ZhuJincheng-git/stride-backend/internal/repository"
 	"github.com/ZhuJincheng-git/stride-backend/pkg/apperror"
 	"github.com/ZhuJincheng-git/stride-backend/pkg/jwt"
+	"github.com/google/uuid"
 )
 
 type AuthService struct {
@@ -111,3 +112,13 @@ func (s *AuthService) Login(ctx context.Context, in LoginInput) (*AuthResult, er
 	return &AuthResult{Token: token, User: user}, nil
 }
 
+func (s *AuthService) CurrentUser(ctx context.Context, id uuid.UUID) (*model.User, error) {
+	user, err := s.users.GetByID(ctx, id)
+	if err != nil {
+		if repository.IsNotFound(err) {
+			return nil, apperror.New(apperror.CodeUnauthenticated, "user no longer exists")
+		}
+		return nil, err
+	}
+	return user, nil
+}
