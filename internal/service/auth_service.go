@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"hash"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -70,5 +69,45 @@ func (s *AuthService) Register(ctx context.Context, in RegisterInput) (*AuthResu
 	// TODO: 5. Audit log
 
 	return &AuthResult{Token: token, User: u}, nil
+}
+
+type LoginInput struct {
+	Identifier string
+	Password string
+}
+
+func (s *AuthService) Login(ctx context.Context, in LoginInput) (*AuthResult, error) {
+	// 1. Validation
+	in.Identifier = strings.TrimSpace(in.Identifier)
+	if in.Identifier == "" || in.Password == "" {
+		return nil, apperror.New(apperror.CodeInvalidArgument, "identifier and password are required")
+	}
+
+	// 2. Found user
+	user, err := s.users.GetByUsername(ctx, in.Identifier)
+	if err != nil && repository.IsNotFound(err) {
+		user, err = s.users.GetByEmail(ctx, strings.ToLower(in.Identifier))
+	}
+	if err != nil {
+		if repository.IsNotFound(err) {
+			return nil, apperror.New(apperror.CodeUnauthenticated, "invalid credentials")
+		}
+		return nil, err
+	}
+
+	// 3. Verify
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(in.Password)); err != nil {
+		return nil, apperror.New(apperror.CodeUnauthenticated, "invalid credentials")
+	}
+
+	// 4. Issue a JWT
+	token, err := s.tokens.Generate(user.ID)
+	if err != nil {
+		return nil, apperror.Wrap(apperror.CodeInternal, "issuing token", err)
+	}
+
+	// TODO: 5. Audit log
+
+	return &AuthResult{Token: token, User: user}, nil
 }
 
