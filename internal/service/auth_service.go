@@ -36,7 +36,7 @@ type RegisterInput struct {
 func (s *AuthService) Register(ctx context.Context, in RegisterInput) (*AuthResult, error) {
 	// 1. Validation
 	in.Username = strings.TrimSpace(in.Username)
-	in.Email = strings.TrimSpace(in.Email)
+	in.Email = strings.TrimSpace(strings.ToLower(in.Email))
 	if in.Username == "" || in.Email == "" || in.Password == "" {
 		return nil, apperror.New(apperror.CodeInvalidArgument, "username, email and password are required")
 	}
