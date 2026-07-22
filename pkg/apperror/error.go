@@ -3,6 +3,7 @@ package apperror
 import (
 	"errors"
 	"fmt"
+	"net/http"
 )
 
 type Code string
@@ -16,13 +17,17 @@ const (
 )
 
 type Error struct {
-	Code Code // machine-readable
+	Code    Code   // machine-readable
 	Message string // human-readable, show to API clients
-	cause error // optional underlying error (NOT exposed to clients)
+	cause   error  // optional underlying error (NOT exposed to clients)
 }
 
 func New(code Code, message string) *Error {
 	return &Error{Code: code, Message: message}
+}
+
+func Newf(code Code, format string, args ...any) *Error {
+	return &Error{Code: code, Message: fmt.Sprintf(format, args...)}
 }
 
 func Wrap(code Code, message string, cause error) *Error {
@@ -39,10 +44,27 @@ func (e *Error) Error() string {
 
 func (e *Error) Unwrap() error { return e.cause }
 
+// StatusCode maps a domain Code to an HTTP status code. Keep this list in
+// sync with the constants above.
+func (e *Error) StatusCode() int {
+	switch e.Code {
+	case CodeInvalidArgument:
+		return http.StatusBadRequest
+	case CodeUnauthenticated:
+		return http.StatusUnauthorized
+	case CodePermissionDenied:
+		return http.StatusForbidden
+	case CodeNotFound:
+		return http.StatusNotFound
+	default:
+		return http.StatusInternalServerError 
+	}
+}
+
 func AsAppError(err error) (*Error, bool) {
 	var ae *Error
 	if errors.As(err, &ae) {
 		return ae, true
 	}
-	return  nil, false
+	return nil, false
 }
