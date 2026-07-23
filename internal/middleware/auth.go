@@ -24,6 +24,7 @@ func AuthRequired(tokens *jwt.Manager) gin.HandlerFunc {
 		parts := strings.SplitN(header, " ", 2)
 		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") || parts[1] == "" {
 			abort(c, http.StatusUnauthorized, "invalid Authorization header")
+			return
 		}
 		claims, err := tokens.Parse(parts[1])
 		if err != nil {
