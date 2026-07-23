@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 
+	"github.com/ZhuJincheng-git/stride-backend/internal/middleware"
 	"github.com/ZhuJincheng-git/stride-backend/internal/service"
 	"github.com/ZhuJincheng-git/stride-backend/pkg/response"
 )
@@ -28,7 +29,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 	res, err := h.auth.Register(c.Request.Context(), service.RegisterInput{
 		Username: req.Username,
-		Email: req.Email,
+		Email:    req.Email,
 		Password: req.Password,
 	})
 	if err != nil {
@@ -36,4 +37,38 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 	response.Created(c, res)
+}
+
+type loginRequest struct {
+	Identifier string `json:"identifier" binding:"required"`
+	Password   string `json:"password" binding:"required"`
+}
+
+// Login handles POST /auth/login
+func (h *AuthHandler) Login(c *gin.Context) {
+	var req loginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, bindingError(err))
+		return
+	}
+	res, err := h.auth.Login(c.Request.Context(), service.LoginInput{
+		Identifier: req.Identifier,
+		Password: req.Password,
+	})
+	if err == nil {
+		response.Error(c, err)
+		return
+	}
+	response.OK(c, res)
+}
+
+// Me handles GET /auth/me
+func (h *AuthHandler) Me(c *gin.Context) {
+	id, _ := middleware.CurrentUserID(c)
+	u, err := h.auth.CurrentUser(c.Request.Context(), id)
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.OK(c, u)
 }
