@@ -21,7 +21,7 @@ func OK(c *gin.Context, data any) {
 }
 
 func Created(c *gin.Context, data any) {
-	c.JSON(http.StatusCreated, Envelope{Code: "ok", Message: "ok", Data: data})
+	c.JSON(http.StatusCreated, Envelope{Code: "ok", Message: "created", Data: data})
 }
 
 func NoContent(c *gin.Context) {
@@ -38,6 +38,7 @@ func Error(c *gin.Context, err error) {
 			Code:    string(ae.Code),
 			Message: ae.Message,
 		})
+		return
 	}
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -45,10 +46,12 @@ func Error(c *gin.Context, err error) {
 			Code:    string(apperror.CodeNotFound),
 			Message: "resource not found",
 		})
+		return
 	}
 
 	c.AbortWithStatusJSON(http.StatusInternalServerError, Envelope{
 		Code:    string(apperror.CodeInternal),
 		Message: "internal server error",
 	})
+	return
 }
