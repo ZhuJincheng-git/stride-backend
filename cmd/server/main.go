@@ -13,6 +13,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("config: %v", err)
 	}
+	cfg.Print()
 
 	db, err := database.Open(cfg)
 	if err != nil {
