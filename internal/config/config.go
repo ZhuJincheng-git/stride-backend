@@ -30,6 +30,10 @@ type Config struct {
 	DBMaxOpen               int    `mapstructure:"db_max_open"`
 	DBConnMaxLifetimeSecond int32  `mapstructure:"db_conn_max_lifetime_second"`
 
+	// Auth
+	JWTSecret string `mapstructure:"jwt_secret" validate:"required"`
+	JWTExpiresHours int `mapstructure:"jwt_expires_hours"`
+
 	// Logging
 	LogLevel string `mapstructure:"log_level" validateL:"oneof=debug info warn error"`
 }
@@ -53,4 +57,8 @@ func (c *Config) ConnMaxLifetime() time.Duration {
 func (c *Config) MySQLDSN() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?%s",
 		c.DBUser, c.DBPassword, c.DBHost, c.DBPort, c.DBName, c.DBParams)
+}
+
+func (c *Config) JWTExpires() time.Duration {
+	return time.Duration(c.JWTExpiresHours) * time.Hour
 }

@@ -56,6 +56,10 @@ func setDefaults() {
 	viper.SetDefault("db_max_open", 100)
 	viper.SetDefault("db_conn_max_lifetime_second", 3600)
 
+	// Auth
+	viper.SetDefault("jwt_secret", "")
+	viper.SetDefault("jwt_expires_hours", 1)
+
 	// Logging
 	viper.SetDefault("log_level", "info")
 }
