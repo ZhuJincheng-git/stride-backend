@@ -55,7 +55,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		Identifier: req.Identifier,
 		Password: req.Password,
 	})
-	if err == nil {
+	if err != nil {
 		response.Error(c, err)
 		return
 	}
