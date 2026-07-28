@@ -1,8 +1,8 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
-	"reflect"
 	"time"
 )
 
@@ -62,17 +62,4 @@ func (c *Config) MySQLDSN() string {
 
 func (c *Config) JWTExpires() time.Duration {
 	return time.Duration(c.JWTExpiresHours) * time.Hour
-}
-
-// Print write config to standard output
-func (c *Config) Print() {
-	v := reflect.ValueOf(c)
-	v = v.Elem()
-	t := v.Type()
-
-	for i := range v.NumField() {
-		field := v.Field(i)
-		fieldName := t.Field(i).Name
-		fmt.Printf("%s: %v\n", fieldName, field.Interface())
-	}
 }
