@@ -37,12 +37,12 @@ func main() {
 	application := app.New(cfg, db)
 
 	srv := &http.Server{
-		Addr: fmt.Sprintf(":%d", cfg.AppPort),
-		Handler: application.Engine,
+		Addr:              fmt.Sprintf(":%d", cfg.AppPort),
+		Handler:           application.Engine,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	log.Printf("listening on :%d (mode=%s)", cfg.AppPort, cfg.AppMode)
+	log.Printf("listening on :%d (mode=%s)", cfg.AppPort, cfg.AppEnv)
 	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("server error: %v", err)
 	}

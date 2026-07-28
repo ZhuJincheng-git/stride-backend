@@ -8,16 +8,16 @@ import (
 type Environment string
 
 const (
-	Develop   Environment = "develop"
-	Release Environment = "release"
-	Test    Environment = "test"
+	Develop Environment = "develop" // Develop mode runs in the development environment.
+	Release Environment = "release" // Release mode runs in the production environment.
+	Test    Environment = "test"    // Test mode allows Config validation failures; use it in tests.
 )
 
 // Config holds the configuration values for the application.
 type Config struct {
 	// App
 	AppPort int         `mapstructure:"app_port" validate:"required,min=1,max=65535"`
-	AppMode Environment `mapstructure:"app_mode" validate:"required,oneof=develop test release"`
+	AppEnv  Environment `mapstructure:"app_mode" validate:"required,oneof=develop test release"`
 
 	// Database
 	DBHost                  string `mapstructure:"db_host" validate:"required"`
@@ -31,8 +31,8 @@ type Config struct {
 	DBConnMaxLifetimeSecond int32  `mapstructure:"db_conn_max_lifetime_second"`
 
 	// Auth
-	JWTSecret string `mapstructure:"jwt_secret" validate:"required"`
-	JWTExpiresHours int `mapstructure:"jwt_expires_hours"`
+	JWTSecret       string `mapstructure:"jwt_secret" validate:"required"`
+	JWTExpiresHours int    `mapstructure:"jwt_expires_hours"`
 
 	// Logging
 	LogLevel string `mapstructure:"log_level" validate:"oneof=debug info warn error"`
@@ -40,12 +40,12 @@ type Config struct {
 
 // IsReleaseMode checks if the server is running in release mode.
 func (c *Config) IsReleaseMode() bool {
-	return c.AppMode == Release
+	return c.AppEnv == Release
 }
 
 // IsDevelopMode checks if the server is running in develop mode.
 func (c *Config) IsDevelopMode() bool {
-	return c.AppMode == Develop
+	return c.AppEnv == Develop
 }
 
 // ConnMaxLifetime returns the connection max lifetime as a time.Duration.
@@ -56,11 +56,11 @@ func (c *Config) ConnMaxLifetime() time.Duration {
 // MySQLDSN constructs the MySQL Data Source Name (DSN) from the configuration.
 func (c *Config) MySQLDSN() string {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
-        c.DBUser, c.DBPassword, c.DBHost, c.DBPort, c.DBName)
-    if c.DBParams != "" {
-        dsn += "?" + c.DBParams
-    }
-    return dsn
+		c.DBUser, c.DBPassword, c.DBHost, c.DBPort, c.DBName)
+	if c.DBParams != "" {
+		dsn += "?" + c.DBParams
+	}
+	return dsn
 }
 
 func (c *Config) JWTExpires() time.Duration {

@@ -8,14 +8,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const TestModeEnv string = "APP_MODE=" + string(Test) + "\n"
+const TestAppEnv string = "APP_ENV=" + string(Test) + "\n"
 
 // TestLoadReadsDotenvFile verifies that Load() merges values from a `.env`.
 func TestLoadReadsDotenvFile(t *testing.T) {
 	// Make a .env file in TempDir for testing
 	dir := t.TempDir()
 	envPath := filepath.Join(dir, ".env")
-	require.NoError(t, os.WriteFile(envPath, []byte(TestModeEnv + "APP_PORT=9830\nDB_PASSWORD=from-dotenv-file\n"), 0o600))
+	require.NoError(t, os.WriteFile(envPath, []byte(TestAppEnv+"APP_PORT=9830\nDB_PASSWORD=from-dotenv-file\n"), 0o600))
 
 	// Change working directory. And Back to work directory after the test
 	wd, err := os.Getwd()
@@ -39,30 +39,30 @@ func TestLoadReadsDotenvFile(t *testing.T) {
 func TestRealEnvOverridesDotenv(t *testing.T) {
 	dir := t.TempDir()
 	envPath := filepath.Join(dir, ".env")
-	require.NoError(t, os.WriteFile(envPath, []byte("APP_MODE=develop"), 0o600))
+	require.NoError(t, os.WriteFile(envPath, []byte("APP_ENV=develop"), 0o600))
 
 	wd, err := os.Getwd()
 	require.NoError(t, err)
-	t.Cleanup(func() { _ = os.Chdir(wd)})
+	t.Cleanup(func() { _ = os.Chdir(wd) })
 	require.NoError(t, os.Chdir(dir))
 
-	t.Setenv("APP_MODE", "test")
+	t.Setenv("APP_ENV", "test")
 
 	cfg, err := Load()
 	require.NoError(t, err)
-	require.Equal(t, Test, cfg.AppMode)
+	require.Equal(t, Test, cfg.AppEnv)
 }
 
 func TestDotenvLocalOverridesDotenv(t *testing.T) {
 	dir := t.TempDir()
 	envPath := filepath.Join(dir, ".env")
-	require.NoError(t, os.WriteFile(envPath, []byte(TestModeEnv + "APP_PORT=9830\nDB_PASSWORD=from-dotenv"), 0o600))
+	require.NoError(t, os.WriteFile(envPath, []byte(TestAppEnv+"APP_PORT=9830\nDB_PASSWORD=from-dotenv"), 0o600))
 	envPathLocal := filepath.Join(dir, ".env.local")
 	require.NoError(t, os.WriteFile(envPathLocal, []byte("DB_PASSWORD=from-dotenvlocal\n"), 0o600))
 
 	wd, err := os.Getwd()
 	require.NoError(t, err)
-	t.Cleanup(func() { _ = os.Chdir(wd)})
+	t.Cleanup(func() { _ = os.Chdir(wd) })
 	require.NoError(t, os.Chdir(dir))
 
 	t.Setenv("APP_PORT", "")

@@ -19,12 +19,12 @@ var envFileCandidates = []string{
 func Load() (*Config, error) {
 	// Set default values for all configuration fields
 	setDefaults()
-	
+
 	// Load .env file if it exists
 	loadEnvFile()
 
 	// Bind environment variables to viper
-	bindEnvVars() 
+	bindEnvVars()
 
 	// Unmarshal the configuration into the Config struct
 	var cfg Config
@@ -35,7 +35,7 @@ func Load() (*Config, error) {
 
 	// Validate the configuration
 	if err := validateConfig(&cfg); err != nil {
-		if cfg.AppMode == Test {
+		if cfg.AppEnv == Test {
 			log.Printf("config: test mode validate fail: %v", err)
 		} else {
 			return nil, err
