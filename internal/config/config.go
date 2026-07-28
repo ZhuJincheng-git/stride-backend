@@ -55,8 +55,12 @@ func (c *Config) ConnMaxLifetime() time.Duration {
 
 // MySQLDSN constructs the MySQL Data Source Name (DSN) from the configuration.
 func (c *Config) MySQLDSN() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?%s",
-		c.DBUser, c.DBPassword, c.DBHost, c.DBPort, c.DBName, c.DBParams)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
+        c.DBUser, c.DBPassword, c.DBHost, c.DBPort, c.DBName)
+    if c.DBParams != "" {
+        dsn += "?" + c.DBParams
+    }
+    return dsn
 }
 
 func (c *Config) JWTExpires() time.Duration {
