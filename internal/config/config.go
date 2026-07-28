@@ -35,7 +35,7 @@ type Config struct {
 	JWTExpiresHours int `mapstructure:"jwt_expires_hours"`
 
 	// Logging
-	LogLevel string `mapstructure:"log_level" validateL:"oneof=debug info warn error"`
+	LogLevel string `mapstructure:"log_level" validate:"oneof=debug info warn error"`
 }
 
 // IsReleaseMode checks if the server is running in release mode.
