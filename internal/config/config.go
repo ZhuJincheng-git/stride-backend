@@ -8,7 +8,7 @@ import (
 type Environment string
 
 const (
-	Debug   Environment = "debug"
+	Develop   Environment = "develop"
 	Release Environment = "release"
 	Test    Environment = "test"
 )
@@ -17,7 +17,7 @@ const (
 type Config struct {
 	// App
 	AppPort int         `mapstructure:"app_port" validate:"required,min=1,max=65535"`
-	AppMode Environment `mapstructure:"app_mode" validate:"required,oneof=debug test release"`
+	AppMode Environment `mapstructure:"app_mode" validate:"required,oneof=develop test release"`
 
 	// Database
 	DBHost                  string `mapstructure:"db_host" validate:"required"`
@@ -43,9 +43,9 @@ func (c *Config) IsReleaseMode() bool {
 	return c.AppMode == Release
 }
 
-// IsDebugMode checks if the server is running in debug mode.
-func (c *Config) IsDebugMode() bool {
-	return c.AppMode == Debug
+// IsDevelopMode checks if the server is running in develop mode.
+func (c *Config) IsDevelopMode() bool {
+	return c.AppMode == Develop
 }
 
 // ConnMaxLifetime returns the connection max lifetime as a time.Duration.
