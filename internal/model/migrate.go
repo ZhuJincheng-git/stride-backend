@@ -6,6 +6,11 @@ import "gorm.io/gorm"
 func AllModels() []any {
 	return []any{
 		&User{},
+		&Goal{},
+		&GoalTag{},
+		&GoalTagRel{},
+		&GoalMetric{},
+		&GoalMetricRel{},
 	}
 }
 
