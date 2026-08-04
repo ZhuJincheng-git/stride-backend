@@ -8,7 +8,7 @@ import (
 )
 
 type BaseEntity struct {
-	ID        uuid.UUID `gore:"type:char(36);primaryKey" json:"id"`
+	ID        uuid.UUID `gorm:"type:char(36);primaryKey" json:"id"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 }
 
