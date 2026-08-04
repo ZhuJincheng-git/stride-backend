@@ -11,6 +11,12 @@ func AllModels() []any {
 		&GoalTagRel{},
 		&GoalMetric{},
 		&GoalMetricRel{},
+		&Task{},
+		&TaskTag{},
+		&TaskTagRel{},
+		&TaskMetric{},
+		&TaskMetricRel{},
+		&TaskWorkRecord{},
 	}
 }
 
