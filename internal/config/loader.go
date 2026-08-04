@@ -36,7 +36,7 @@ func Load() (*Config, error) {
 	// Validate the configuration
 	if err := validateConfig(&cfg); err != nil {
 		if cfg.AppEnv == Test {
-			log.Printf("config: test mode validate fail: %v", err)
+			log.Printf("config: test environment validate fail: %v", err)
 		} else {
 			return nil, err
 		}
@@ -47,7 +47,7 @@ func Load() (*Config, error) {
 func setDefaults() {
 	// App
 	viper.SetDefault("app_port", 8080)
-	viper.SetDefault("app_mode", Release)
+	viper.SetDefault("app_env", Develop)
 
 	// Database
 	viper.SetDefault("db_host", "localhost")

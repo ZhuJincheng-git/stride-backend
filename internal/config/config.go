@@ -8,16 +8,16 @@ import (
 type Environment string
 
 const (
-	Develop Environment = "develop" // Develop mode runs in the development environment.
-	Release Environment = "release" // Release mode runs in the production environment.
-	Test    Environment = "test"    // Test mode allows Config validation failures; use it in tests.
+	Develop Environment = "develop"
+	Release Environment = "release"
+	Test    Environment = "test" // Test environment allows Config validation failures; use it in tests.
 )
 
 // Config holds the configuration values for the application.
 type Config struct {
 	// App
 	AppPort int         `mapstructure:"app_port" validate:"required,min=1,max=65535"`
-	AppEnv  Environment `mapstructure:"app_mode" validate:"required,oneof=develop test release"`
+	AppEnv  Environment `mapstructure:"app_env" validate:"required,oneof=develop test release"`
 
 	// Database
 	DBHost                  string `mapstructure:"db_host" validate:"required"`
@@ -38,13 +38,13 @@ type Config struct {
 	LogLevel string `mapstructure:"log_level" validate:"oneof=debug info warn error"`
 }
 
-// IsReleaseMode checks if the server is running in release mode.
-func (c *Config) IsReleaseMode() bool {
+// IsReleaseEnv checks if the server is running in release environment.
+func (c *Config) IsReleaseEnv() bool {
 	return c.AppEnv == Release
 }
 
-// IsDevelopMode checks if the server is running in develop mode.
-func (c *Config) IsDevelopMode() bool {
+// IsDevelopEnv checks if the server is running in develop environment.
+func (c *Config) IsDevelopEnv() bool {
 	return c.AppEnv == Develop
 }
 

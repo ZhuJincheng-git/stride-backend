@@ -23,7 +23,7 @@ func Open(cfg *config.Config) (*gorm.DB, error) {
 		SlowThreshold:             200 * time.Millisecond,
 		LogLevel:                  logLevel,
 		IgnoreRecordNotFoundError: true,
-		Colorful:                  !cfg.IsReleaseMode(),
+		Colorful:                  !cfg.IsReleaseEnv(),
 	})
 
 	db, err := gorm.Open(mysql.Open(cfg.MySQLDSN()), &gorm.Config{
