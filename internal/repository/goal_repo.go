@@ -13,7 +13,7 @@ type GoalFilter struct {
 	UserID         uuid.UUID
 	OnlyCompleted  *bool
 	OnlyDeleted    bool
-	includeDeleted bool
+	IncludeDeleted bool
 	Limit          int
 	Offset         int
 }
@@ -57,7 +57,7 @@ func (r *goalRepo) List(ctx context.Context, f GoalFilter) ([]model.Goal, error)
 	q := r.db.WithContext(ctx).Model(&model.Goal{})
 	if f.OnlyDeleted {
 		q = q.Unscoped().Where("deleted_at IS NOT NULL")
-	} else if f.includeDeleted {
+	} else if f.IncludeDeleted {
 		q = q.Unscoped()
 	}
 	q = q.Where("user_id = ?", f.UserID)
