@@ -53,5 +53,4 @@ func Error(c *gin.Context, err error) {
 		Code:    string(apperror.CodeInternal),
 		Message: "internal server error",
 	})
-	return
 }
