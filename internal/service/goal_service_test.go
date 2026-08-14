@@ -70,3 +70,39 @@ func TestCreateTrimsTitleAndPersistsOptionalFields(t *testing.T) {
 	require.NotNil(t, g.ExpectedStartTime)
 }
 
+func TestUpdateLeavesUnspecifiedFieldAlone(t *testing.T) {
+	f := newGoalSvcFixture(t)
+	desc := "original"
+	g, err := f.svc.Create(context.Background(), f.userID, service.GoalInput{
+		Title: strPtr("Title v1"),
+		Description: &desc,
+	})
+	require.NoError(t, err)
+
+	updated, err := f.svc.Update(context.Background(), f.userID, g.ID, service.GoalInput{
+		Title: strPtr("Title v2"),
+	})
+	require.NoError(t, err)
+	require.Equal(t, "Title v2", updated.Title)
+	require.Equal(t, desc, updated.Description, "Description should not be updated")
+}
+
+func TestUpdateRejectsSelfParent(t *testing.T) {
+	f := newGoalSvcFixture(t)
+	g, err := f.svc.Create(context.Background(), f.userID, service.GoalInput{Title: strPtr("g")})
+	require.NoError(t, err)
+
+	_, err = f.svc.Update(context.Background(), f.userID, g.ID, service.GoalInput{ParentGoalID: &g.ID})
+	ae, ok := apperror.AsAppError(err)
+	require.True(t, ok)
+	require.Equal(t, apperror.CodeInvalidArgument, ae.Code)
+}
+
+func TestUpdateMissingReturnsNotFound(t *testing.T) {
+	f := newGoalSvcFixture(t)
+	_, err := f.svc.Update(context.Background(), f.userID, uuid.New(), service.GoalInput{Title: strPtr("x")})
+	ae, ok := apperror.AsAppError(err)
+	require.True(t, ok)
+	require.Equal(t, apperror.CodeNotFound, ae.Code)
+}
+
