@@ -136,3 +136,63 @@ func TestUncompleteClearsFinishedAt(t *testing.T) {
 	require.Nil(t, out.FinishedAt)
 }
 
+func TestSoftDeleteThenRestoreRoundTrip(t *testing.T) {
+	f := newGoalSvcFixture(t)
+	g, err := f.svc.Create(context.Background(), f.userID, service.GoalInput{Title: strPtr("g")})
+	require.NoError(t, err)
+
+	require.NoError(t, f.svc.SoftDelete(context.Background(), f.userID, g.ID))
+
+	_, err = f.svc.Get(context.Background(), f.userID, g.ID, false)
+	require.Error(t, err)
+	_, err = f.svc.Get(context.Background(), f.userID, g.ID, true)
+	require.NoError(t, err)
+
+	restored, err := f.svc.Restore(context.Background(), f.userID, g.ID)
+	require.NoError(t, err)
+	require.NotNil(t, restored)
+
+	live, err := f.svc.List(context.Background(), f.userID, service.ListFilter{})
+	require.NoError(t, err)
+	require.Len(t, live, 1)
+}
+
+func TestListFiltersByCompleted(t *testing.T) {
+	f := newGoalSvcFixture(t)
+	a, err := f.svc.Create(context.Background(), f.userID, service.GoalInput{Title: strPtr("a")})
+	require.NoError(t, err)
+	_, err = f.svc.Create(context.Background(), f.userID, service.GoalInput{Title: strPtr("b")})
+	require.NoError(t, err)
+	_, err = f.svc.Complete(context.Background(), f.userID, a.ID)
+	require.NoError(t, err)
+
+	completed, err := f.svc.List(context.Background(), f.userID, service.ListFilter{Completed: boolPtr(true)})
+	require.NoError(t, err)
+	require.Len(t, completed, 1)
+	require.Equal(t, a.ID, completed[0].ID)
+
+	open, err := f.svc.List(context.Background(), f.userID, service.ListFilter{Completed: boolPtr(false)})
+	require.NoError(t, err)
+	require.Len(t, open, 1)
+	require.NotEqual(t, a.ID, open[0].ID)
+}
+
+func TestListIsScopedToUser(t *testing.T) {
+	f := newGoalSvcFixture(t)
+	_, err := f.svc.Create(context.Background(), f.userID, service.GoalInput{Title: strPtr("mine")})
+	require.NoError(t, err)
+
+	other := uuid.New()
+	require.NoError(t, f.db.Create(&model.User{
+		BaseEntity: model.BaseEntity{ID: other},
+		Username: "x",
+		Email: "x@example.com",
+		PasswordHash: "p",
+	}).Error)
+	require.NoError(t, f.db.Create(&model.Goal{UserID: other, Title: "theirs"}).Error)
+
+	mine, err := f.svc.List(context.Background(), f.userID, service.ListFilter{})
+	require.NoError(t, err)
+	require.Len(t, mine, 1)
+	require.Equal(t, "mine", mine[0].Title)
+}
