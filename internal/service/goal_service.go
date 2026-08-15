@@ -126,14 +126,14 @@ func (s *GoalService) SoftDelete(ctx context.Context, userID, id uuid.UUID) erro
 }
 
 // Restore brings a soft-deleted goal back.
-func (s *GoalService) Restore(ctx context.Context, userID, id uuid.UUID) error {
+func (s *GoalService) Restore(ctx context.Context, userID, id uuid.UUID) (*model.Goal, error) {
 	if err := s.goals.Restore(ctx, userID, id); err != nil {
 		if repository.IsNotFound(err) {
-			return apperror.New(apperror.CodeNotFound, "no soft-deleted goal with that id")
+			return nil, apperror.New(apperror.CodeNotFound, "no soft-deleted goal with that id")
 		}
-		return err
+		return nil, err
 	}
-	return nil
+	return s.goals.GetByID(ctx, userID, id, false)
 }
 
 // HardDelete removes the goal permanently.
