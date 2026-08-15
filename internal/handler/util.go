@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"strconv"
+
 	"github.com/ZhuJincheng-git/stride-backend/pkg/apperror"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -22,4 +24,17 @@ func parseUUIDParam(c *gin.Context, name string) (uuid.UUID, error) {
 		return uuid.Nil, apperror.Newf(apperror.CodeInvalidArgument, "invalid %s: %q", name, raw)
 	}
 	return id, nil
+}
+
+// parseBoolQuery handles the `?completed=true|false` like param.
+func parseBoolQuery(c *gin.Context, name string) (*bool, error) {
+	raw := c.Query(name)
+	if raw == "" {
+		return nil, nil
+	}
+	v, err := strconv.ParseBool(raw)
+	if err != nil {
+		return nil, apperror.Newf(apperror.CodeInvalidArgument, "invalid %s: %q", name, raw)
+	}
+	return &v, nil
 }
