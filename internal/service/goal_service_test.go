@@ -106,3 +106,33 @@ func TestUpdateMissingReturnsNotFound(t *testing.T) {
 	require.Equal(t, apperror.CodeNotFound, ae.Code)
 }
 
+func TestCompleteIsIdempotent(t *testing.T) {
+	f := newGoalSvcFixture(t)
+	g, err := f.svc.Create(context.Background(), f.userID, service.GoalInput{Title: strPtr("g")})
+	require.NoError(t, err)
+
+	first, err := f.svc.Complete(context.Background(), f.userID, g.ID)
+	require.NoError(t, err)
+	require.NotNil(t, first.FinishedAt)
+	stamp := *first.FinishedAt
+
+	time.Sleep(2 * time.Millisecond)
+
+	second, err := f.svc.Complete(context.Background(), f.userID, g.ID)
+	require.NoError(t, err)
+	require.NotNil(t, second.FinishedAt)
+	require.True(t, second.FinishedAt.Equal(stamp), "complete must be idempotent")
+}
+
+func TestUncompleteClearsFinishedAt(t *testing.T) {
+	f := newGoalSvcFixture(t)
+	g, err := f.svc.Create(context.Background(), f.userID, service.GoalInput{Title: strPtr("g")})
+	require.NoError(t, err)
+	_, err = f.svc.Complete(context.Background(), f.userID, g.ID)
+	require.NoError(t, err)
+
+	out, err := f.svc.Uncomplete(context.Background(), f.userID, g.ID)
+	require.NoError(t, err)
+	require.Nil(t, out.FinishedAt)
+}
+
