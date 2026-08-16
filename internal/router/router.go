@@ -9,6 +9,7 @@ import (
 
 type Handlers struct {
 	Auth *handler.AuthHandler
+	Goal *handler.GoalHandler
 }
 
 func Build(h *Handlers, tokens *jwt.Manager) *gin.Engine {
@@ -37,6 +38,20 @@ func Build(h *Handlers, tokens *jwt.Manager) *gin.Engine {
 	authed.Use(middleware.AuthRequired(tokens))
 	{
 		authed.GET("/auth/me", h.Auth.Me)
+
+		// Goals
+		g := authed.Group("/goals")
+		{
+			g.POST("", h.Goal.Create)
+			g.GET("", h.Goal.List)
+			g.GET("/:id", h.Goal.Get)
+			g.PATCH("/:id", h.Goal.Update)
+			g.DELETE("/:id", h.Goal.SoftDelete)
+			g.DELETE("/:id/permanent", h.Goal.HardDelete)
+			g.POST("/:id/restore", h.Goal.Restore)
+			g.POST("/:id/complete", h.Goal.Complete)
+			g.POST("/:id/uncomplete", h.Goal.Uncomplete)
+		}
 	}
 
 	return r
