@@ -33,11 +33,11 @@ func (h *GoalHandler) Create(c *gin.Context) {
 		return
 	}
 	g, err := h.svc.Create(c.Request.Context(), userID, service.GoalInput{
-		Title: req.Title,
-		Description: req.Description,
+		Title:             req.Title,
+		Description:       req.Description,
 		ExpectedStartTime: req.ExpectedStartTime,
-		ExpectedEndTime: req.ExpectedEndTime,
-		ParentGoalID: req.ParentGoalID,
+		ExpectedEndTime:   req.ExpectedEndTime,
+		ParentGoalID:      req.ParentGoalID,
 	})
 	if err != nil {
 		response.Error(c, err)
@@ -60,11 +60,11 @@ func (h *GoalHandler) Update(c *gin.Context) {
 		return
 	}
 	g, err := h.svc.Update(c.Request.Context(), userID, id, service.GoalInput{
-		Title: req.Title,
-		Description: req.Description,
+		Title:             req.Title,
+		Description:       req.Description,
 		ExpectedStartTime: req.ExpectedStartTime,
-		ExpectedEndTime: req.ExpectedEndTime,
-		ParentGoalID: req.ParentGoalID,
+		ExpectedEndTime:   req.ExpectedEndTime,
+		ParentGoalID:      req.ParentGoalID,
 	})
 	if err != nil {
 		response.Error(c, err)
@@ -113,8 +113,8 @@ func (h *GoalHandler) List(c *gin.Context) {
 		return
 	}
 	out, err := h.svc.List(c.Request.Context(), userID, service.ListFilter{
-		Completed: completed,
-		Deleted: boolPtrValue(deletedOnly),
+		Completed:      completed,
+		Deleted:        boolPtrValue(deletedOnly),
 		IncludeDeleted: boolPtrValue(includeDeleted),
 	})
 	if err != nil {
