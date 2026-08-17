@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/ZhuJincheng-git/stride-backend/internal/middleware"
@@ -33,7 +32,6 @@ func (h *GoalHandler) Create(c *gin.Context) {
 		response.Error(c, bindingError(err))
 		return
 	}
-	fmt.Println(req.ParentGoalID) // DEBUG
 	g, err := h.svc.Create(c.Request.Context(), userID, service.GoalInput{
 		Title:             req.Title,
 		Description:       req.Description,
