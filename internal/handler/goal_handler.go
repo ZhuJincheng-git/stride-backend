@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/ZhuJincheng-git/stride-backend/internal/middleware"
@@ -17,11 +18,11 @@ type GoalHandler struct {
 func NewGoalHandler(s *service.GoalService) *GoalHandler { return &GoalHandler{svc: s} }
 
 type goalUpsertRequest struct {
-	Title             *string    `join:"title"`
-	Description       *string    `join:"description"`
-	ExpectedStartTime *time.Time `join:"expected_start_time"`
-	ExpectedEndTime   *time.Time `join:"expected_end_time"`
-	ParentGoalID      *uuid.UUID `join:"parent_goal_id"`
+	Title             *string    `json:"title"               binding:"omitempty,min=1,max=100"`
+	Description       *string    `json:"description"         binding:"omitempty,max=10000"`
+	ExpectedStartTime *time.Time `json:"expected_start_time"`
+	ExpectedEndTime   *time.Time `json:"expected_end_time"`
+	ParentGoalID      *uuid.UUID `json:"parent_goal_id"`
 }
 
 // Create handles POST /goals.
@@ -32,6 +33,7 @@ func (h *GoalHandler) Create(c *gin.Context) {
 		response.Error(c, bindingError(err))
 		return
 	}
+	fmt.Println(req.ParentGoalID) // DEBUG
 	g, err := h.svc.Create(c.Request.Context(), userID, service.GoalInput{
 		Title:             req.Title,
 		Description:       req.Description,
