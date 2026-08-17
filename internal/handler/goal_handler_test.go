@@ -77,6 +77,10 @@ func TestGoalLifecycle(t *testing.T) {
 	rec = h.Do(t, http.MethodGet, "/api/v1/goals?include_deleted=true", token, nil)
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Empty(t, testutil.DecodeData[[]model.Goal](t, rec))
+
+	// get check
+	rec = h.Do(t, http.MethodGet, "/api/v1/goals/"+created.ID.String(), token, nil)
+	require.Equal(t, http.StatusNotFound, rec.Code)
 }
 
 func TestGoalCannotBeOwnParent(t *testing.T) {
@@ -92,3 +96,22 @@ func TestGoalCannotBeOwnParent(t *testing.T) {
 	require.Equal(t, http.StatusBadRequest, rec.Code, rec.Body.String())
 }
 
+func TestGoalIsolatedPerUser(t *testing.T) {
+	h := testutil.New(t)
+	tokenA := h.Register(t, "user-a", "a@example.com", "super-secret")
+	tokenB := h.Register(t, "user-b", "b@example.com", "super-secret")
+
+	// A creates a goal
+	rec := h.Do(t, http.MethodPost, "/api/v1/goals", tokenA, map[string]any{"title": "A's goal"})
+	require.Equal(t, http.StatusCreated, rec.Code, rec.Body.String())
+	g := testutil.DecodeData[model.Goal](t, rec)
+
+	// B can't see it
+	rec = h.Do(t, http.MethodGet, "/api/v1/goals"+g.ID.String(), tokenB, nil)
+	require.Equal(t, http.StatusNotFound, rec.Code, rec.Body.String())
+
+	// B's list is empty
+	rec = h.Do(t, http.MethodGet, "/api/v1/goals", tokenB, nil)
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Empty(t, testutil.DecodeData[[]model.Goal](t, rec))
+}
