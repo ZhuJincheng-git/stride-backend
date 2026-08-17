@@ -19,7 +19,7 @@ type Goal struct {
 	ExpectedEndTime   *time.Time `json:"expected_end_time,omitempty"`
 	ParentGoalID      *uuid.UUID `gorm:"type:char(36)" json:"parent_goal_id,omitempty"`
 
-	Tags    []GoalTag    `gorm:"many2many:goal_tag_rel;joinForeignKey:GoalID;joinReferences:GoalTagID" json:"tags:omitempty"`
+	Tags    []GoalTag    `gorm:"many2many:goal_tag_rel;joinForeignKey:GoalID;joinReferences:GoalTagID" json:"tags,omitempty"`
 	Metrics []GoalMetric `gorm:"many2many:goal_metric_rel;joinForeignKey:GoalID;joinReferences:GoalMetricID" json:"metrics,omitempty"`
 }
 
