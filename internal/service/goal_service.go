@@ -32,6 +32,15 @@ func (s *GoalService) Create(ctx context.Context, userID uuid.UUID, in GoalInput
 	if in.Title == nil || strings.TrimSpace(*in.Title) == "" {
 		return nil, apperror.New(apperror.CodeInvalidArgument, "title is required")
 	}
+	if in.ParentGoalID != nil {
+		_, err := s.goals.GetByID(ctx, userID, *in.ParentGoalID, false)
+		if err != nil {
+			if repository.IsNotFound(err) {
+				return nil, apperror.New(apperror.CodeInvalidArgument, "parent goal not exist")
+			}
+			return nil, err
+		}
+	}
 	g := &model.Goal{
 		UserID:            userID,
 		Title:             strings.TrimSpace(*in.Title),
@@ -56,6 +65,15 @@ func (s *GoalService) Update(ctx context.Context, userID, id uuid.UUID, in GoalI
 			return nil, apperror.New(apperror.CodeNotFound, "goal not found")
 		}
 		return nil, err
+	}
+	if in.ParentGoalID != nil {
+		_, err := s.goals.GetByID(ctx, userID, *in.ParentGoalID, false)
+		if err != nil {
+			if repository.IsNotFound(err) {
+				return nil, apperror.New(apperror.CodeInvalidArgument, "parent goal not exist")
+			}
+			return nil, err
+		}
 	}
 	if in.Title != nil {
 		if strings.TrimSpace(*in.Title) == "" {
