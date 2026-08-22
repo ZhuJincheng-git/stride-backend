@@ -26,7 +26,7 @@ func parseUUIDParam(c *gin.Context, name string) (uuid.UUID, error) {
 	return id, nil
 }
 
-// parseBoolQuery handles the `?completed=true|false` like param.
+// parseBoolQuery handles the `?completed=true|false` like params.
 func parseBoolQuery(c *gin.Context, name string) (*bool, error) {
 	raw := c.Query(name)
 	if raw == "" {
