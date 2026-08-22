@@ -37,8 +37,7 @@ func TestGoalLifecycle(t *testing.T) {
 	// list completed
 	rec = h.Do(t, http.MethodGet, "/api/v1/goals?completed=true", token, nil)
 	require.Equal(t, http.StatusOK, rec.Code)
-	list := testutil.DecodeData[[]model.Goal](t, rec)
-	require.Len(t, list, 1)
+	require.Len(t, testutil.DecodeData[[]model.Goal](t, rec), 1)
 
 	// list non-completed
 	rec = h.Do(t, http.MethodGet, "/api/v1/goals?completed=false", token, nil)
@@ -51,6 +50,11 @@ func TestGoalLifecycle(t *testing.T) {
 	uncomplete := testutil.DecodeData[model.Goal](t, rec)
 	require.Nil(t, uncomplete.FinishedAt)
 
+	// list non-completed
+	rec = h.Do(t, http.MethodGet, "/api/v1/goals?completed=false", token, nil)
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Len(t, testutil.DecodeData[[]model.Goal](t, rec), 1)
+
 	// soft delete
 	rec = h.Do(t, http.MethodDelete, "/api/v1/goals/"+created.ID.String(), token, nil)
 	require.Equal(t, http.StatusNoContent, rec.Code)
@@ -60,10 +64,15 @@ func TestGoalLifecycle(t *testing.T) {
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Len(t, testutil.DecodeData[[]model.Goal](t, rec), 1)
 
-	// live list
+	// list non-deleted
 	rec = h.Do(t, http.MethodGet, "/api/v1/goals", token, nil)
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Empty(t, testutil.DecodeData[[]model.Goal](t, rec))
+
+	// list all: show
+	rec = h.Do(t, http.MethodGet, "/api/v1/goals?include_deleted=true", token, nil)
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Len(t, testutil.DecodeData[[]model.Goal](t, rec), 1)
 
 	// restore
 	rec = h.Do(t, http.MethodPost, "/api/v1/goals/"+created.ID.String()+"/restore", token, nil)
