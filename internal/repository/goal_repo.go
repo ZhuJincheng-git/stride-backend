@@ -11,7 +11,7 @@ import (
 
 type GoalFilter struct {
 	UserID         uuid.UUID
-	OnlyCompleted  *bool
+	OnlyCompleted  *bool // nil = ignore; true = WHERE finished_at IS NOT NULL; false = inverse
 	OnlyDeleted    bool
 	IncludeDeleted bool
 	Limit          int
