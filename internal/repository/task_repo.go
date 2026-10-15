@@ -26,7 +26,7 @@ type TaskRepository interface {
 	List(ctx context.Context, f TaskFilter) ([]model.Task, error)
 	SoftDelete(ctx context.Context, userID, id uuid.UUID) error
 	Restore(ctx context.Context, userID, id uuid.UUID) error
-	HardDelete(ctx context.Context, userID, id uuid.UUID)
+	HardDelete(ctx context.Context, userID, id uuid.UUID) error
 	SetFinished(ctx context.Context, userID, id uuid.UUID, finishedAt *time.Time) error
 }
 
