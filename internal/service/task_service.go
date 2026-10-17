@@ -190,10 +190,9 @@ func (s *TaskService) Uncomplete(ctx context.Context, userID, id uuid.UUID) (*mo
 		}
 		return nil, err
 	}
-	now := time.Now()
-	if err := s.tasks.SetFinished(ctx, userID, id, &now); err != nil {
+	if err := s.tasks.SetFinished(ctx, userID, id, nil); err != nil {
 		return nil, err
 	}
-	t.FinishedAt = &now
+	t.FinishedAt = nil
 	return t, nil
 }
