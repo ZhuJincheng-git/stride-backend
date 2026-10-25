@@ -62,7 +62,7 @@ func Build(h *Handlers, tokens *jwt.Manager) *gin.Engine {
 			t.GET("/:id", h.Task.Get)
 			t.PATCH("/:id", h.Goal.Update)
 			t.DELETE("/:id", h.Task.SoftDelete)
-			t.DELETE("/:id", h.Task.HardDelete)
+			t.DELETE("/:id/permanent", h.Task.HardDelete)
 			t.POST("/:id/restore", h.Task.Restore)
 			t.POST("/:id/complete", h.Task.Complete)
 			t.POST("/:id/uncomplete", h.Goal.Uncomplete)
