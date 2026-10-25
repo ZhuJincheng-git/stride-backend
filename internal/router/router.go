@@ -10,6 +10,7 @@ import (
 type Handlers struct {
 	Auth *handler.AuthHandler
 	Goal *handler.GoalHandler
+	Task *handler.TaskHandler
 }
 
 func Build(h *Handlers, tokens *jwt.Manager) *gin.Engine {
@@ -51,6 +52,20 @@ func Build(h *Handlers, tokens *jwt.Manager) *gin.Engine {
 			g.POST("/:id/restore", h.Goal.Restore)
 			g.POST("/:id/complete", h.Goal.Complete)
 			g.POST("/:id/uncomplete", h.Goal.Uncomplete)
+		}
+
+		// Tasks
+		t := authed.Group("/tasks")
+		{
+			t.POST("", h.Task.Create)
+			t.GET("", h.Task.List)
+			t.GET("/:id", h.Task.Get)
+			t.PATCH("/:id", h.Goal.Update)
+			t.DELETE("/:id", h.Task.SoftDelete)
+			t.DELETE("/:id", h.Task.HardDelete)
+			t.POST("/:id/restore", h.Task.Restore)
+			t.POST("/:id/complete", h.Task.Complete)
+			t.POST("/:id/uncomplete", h.Goal.Uncomplete)
 		}
 	}
 
