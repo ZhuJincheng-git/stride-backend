@@ -11,6 +11,7 @@ type Handlers struct {
 	Auth *handler.AuthHandler
 	Goal *handler.GoalHandler
 	Task *handler.TaskHandler
+	Tag *handler.TagHandler
 }
 
 func Build(h *Handlers, tokens *jwt.Manager) *gin.Engine {
@@ -66,6 +67,20 @@ func Build(h *Handlers, tokens *jwt.Manager) *gin.Engine {
 			t.POST("/:id/restore", h.Task.Restore)
 			t.POST("/:id/complete", h.Task.Complete)
 			t.POST("/:id/uncomplete", h.Goal.Uncomplete)
+		}
+
+		// Tag catalogue
+		gt := authed.Group("/goal-tags")
+		{
+			gt.POST("", h.Tag.CreateGoalTag)
+			gt.GET("", h.Tag.ListGoalTags)
+			gt.DELETE("/:id", h.Tag.DeleteGoalTag)
+		}
+		tt := authed.Group("/task-tags")
+		{
+			tt.POST("", h.Tag.CreateTaskTag)
+			tt.GET("", h.Tag.ListTaskTags)
+			tt.DELETE("/:id", h.Tag.DeleteTaskTag)
 		}
 	}
 
