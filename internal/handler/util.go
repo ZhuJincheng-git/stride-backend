@@ -26,6 +26,18 @@ func parseUUIDParam(c *gin.Context, name string) (uuid.UUID, error) {
 	return id, nil
 }
 
+func parseUUIDQuery(c *gin.Context, name string) (*uuid.UUID, error) {
+	raw := c.Query(name)
+	if raw == "" {
+		return nil, nil
+	}
+	id, err := uuid.Parse(raw)
+	if err != nil {
+		return nil, apperror.Newf(apperror.CodeInvalidArgument, "invalid %s: %q", name, raw)
+	}
+	return &id, nil
+}
+
 // parseBoolQuery handles the `?completed=true|false` like params.
 func parseBoolQuery(c *gin.Context, name string) (*bool, error) {
 	raw := c.Query(name)
