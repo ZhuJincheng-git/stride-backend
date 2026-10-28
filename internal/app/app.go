@@ -25,18 +25,20 @@ func New(cfg *config.Config, db *gorm.DB) *App {
 	userRepo := repository.NewUserRepository(db)
 	goalRepo := repository.NewGoalRepository(db)
 	taskRepo := repository.NewTaskRepository(db)
+	tagRepo := repository.NewTagRepository(db)
 
 	// --- services ---
 	authSvc := service.NewAuthService(userRepo, tokens)
 	goalSvc := service.NewGoalService(goalRepo)
 	taskSvc := service.NewTaskService(taskRepo)
-
+	tagSvc := service.NewTagService(tagRepo)
 
 	// --- handlers ---
 	h := &router.Handlers{
 		Auth: handler.NewAuthHandler(authSvc),
 		Goal: handler.NewGoalHandler(goalSvc),
 		Task: handler.NewTaskService(taskSvc),
+		Tag:  handler.NewTagHandler(tagSvc),
 	}
 
 	engine := router.Build(h, tokens)

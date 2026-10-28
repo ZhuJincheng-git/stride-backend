@@ -11,7 +11,7 @@ type Handlers struct {
 	Auth *handler.AuthHandler
 	Goal *handler.GoalHandler
 	Task *handler.TaskHandler
-	Tag *handler.TagHandler
+	Tag  *handler.TagHandler
 }
 
 func Build(h *Handlers, tokens *jwt.Manager) *gin.Engine {
@@ -53,6 +53,11 @@ func Build(h *Handlers, tokens *jwt.Manager) *gin.Engine {
 			g.POST("/:id/restore", h.Goal.Restore)
 			g.POST("/:id/complete", h.Goal.Complete)
 			g.POST("/:id/uncomplete", h.Goal.Uncomplete)
+
+			// Goal-scoped tags
+			g.GET("/:id/tags", h.Tag.ListGoalTagsForGoal)
+			g.POST("/:id/tags", h.Tag.AttachGoalTags)
+			g.DELETE("/:id/tags", h.Tag.DetachGoalTags)
 		}
 
 		// Tasks
@@ -61,12 +66,17 @@ func Build(h *Handlers, tokens *jwt.Manager) *gin.Engine {
 			t.POST("", h.Task.Create)
 			t.GET("", h.Task.List)
 			t.GET("/:id", h.Task.Get)
-			t.PATCH("/:id", h.Goal.Update)
+			t.PATCH("/:id", h.Task.Update)
 			t.DELETE("/:id", h.Task.SoftDelete)
 			t.DELETE("/:id/permanent", h.Task.HardDelete)
 			t.POST("/:id/restore", h.Task.Restore)
 			t.POST("/:id/complete", h.Task.Complete)
-			t.POST("/:id/uncomplete", h.Goal.Uncomplete)
+			t.POST("/:id/uncomplete", h.Task.Uncomplete)
+
+			// Task-scoped tags
+			t.GET("/:id/tags", h.Tag.ListTaskTagsForTask)
+			t.POST("/:id/tags", h.Tag.AttachTaskTags)
+			t.DELETE("/:id/tags", h.Tag.DetachTaskTags)
 		}
 
 		// Tag catalogue

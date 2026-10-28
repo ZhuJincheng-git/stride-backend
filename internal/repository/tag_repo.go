@@ -123,7 +123,7 @@ func (r *tagRepo) AttachTaskTags(ctx context.Context, userID, taskID uuid.UUID, 
 	if err := r.assertTaskTagsOwned(ctx, userID, tagIDs); err != nil {
 		return err
 	}
-	rels := make([]model.TaskTagRel, 0, len(taskID))
+	rels := make([]model.TaskTagRel, 0, len(tagIDs))
 	for _, t := range tagIDs {
 		rels = append(rels, model.TaskTagRel{TaskID: taskID, TaskTagID: t})
 	}
@@ -192,7 +192,7 @@ func (r *tagRepo) assertTaskTagsOwned(ctx context.Context, userID uuid.UUID, ids
 		return errors.New("no tag ids supplied")
 	}
 	var count int64
-	if err := r.db.WithContext(ctx).Model(&model.GoalTag{}).Where("user_id = ? AND id IN ?", userID, ids).Count(&count).Error; err != nil {
+	if err := r.db.WithContext(ctx).Model(&model.TaskTag{}).Where("user_id = ? AND id IN ?", userID, ids).Count(&count).Error; err != nil {
 		return err
 	}
 	if int(count) != len(ids) {
