@@ -14,17 +14,17 @@ type TaskHandler struct {
 	svc *service.TaskService
 }
 
-func NewTaskService(s *service.TaskService) *TaskHandler { return &TaskHandler{svc: s}}
+func NewTaskService(s *service.TaskService) *TaskHandler { return &TaskHandler{svc: s} }
 
 type taskUpsertRequest struct {
-	Title *string `json:"title" binding:"omitempty,min=1,max=100"`
-	Description *string `json:"description" binding:"omitempty,max=10000"`
+	Title             *string    `json:"title" binding:"omitempty,min=1,max=100"`
+	Description       *string    `json:"description" binding:"omitempty,max=10000"`
 	ExpectedStartTime *time.Time `json:"expected_start_time"`
-	ExpectedEndTime *time.Time `json:"expected_end_time"`
-	GoalID *uuid.UUID `json:"goal_id"`
-	ParentTaskID *uuid.UUID `json:"parent_task_id"`
-	ClearGoal bool `json:"clear_goal"`
-	ClearParent bool `json:"clear_parent"`
+	ExpectedEndTime   *time.Time `json:"expected_end_time"`
+	GoalID            *uuid.UUID `json:"goal_id"`
+	ParentTaskID      *uuid.UUID `json:"parent_task_id"`
+	ClearGoal         bool       `json:"clear_goal"`
+	ClearParent       bool       `json:"clear_parent"`
 }
 
 // Create handles POST /tasks.
@@ -36,12 +36,12 @@ func (h *TaskHandler) Create(c *gin.Context) {
 		return
 	}
 	t, err := h.svc.Create(c.Request.Context(), userID, service.TaskInput{
-		Title: req.Title,
-		Description: req.Description,
+		Title:             req.Title,
+		Description:       req.Description,
 		ExpectedStartTime: req.ExpectedStartTime,
-		ExpectedEndTime: req.ExpectedEndTime,
-		GoalID: req.GoalID,
-		ParentTaskID: req.ParentTaskID,
+		ExpectedEndTime:   req.ExpectedEndTime,
+		GoalID:            req.GoalID,
+		ParentTaskID:      req.ParentTaskID,
 	})
 	if err != nil {
 		response.Error(c, err)
@@ -64,14 +64,14 @@ func (h *TaskHandler) Update(c *gin.Context) {
 		return
 	}
 	t, err := h.svc.Update(c.Request.Context(), userID, id, service.TaskInput{
-		Title: req.Title,
-		Description: req.Description,
+		Title:             req.Title,
+		Description:       req.Description,
 		ExpectedStartTime: req.ExpectedStartTime,
-		ExpectedEndTime: req.ExpectedEndTime,
-		GoalID: req.GoalID,
-		ParentTaskID: req.ParentTaskID,
-		ClearGoal: req.ClearGoal,
-		ClearParent: req.ClearParent,
+		ExpectedEndTime:   req.ExpectedEndTime,
+		GoalID:            req.GoalID,
+		ParentTaskID:      req.ParentTaskID,
+		ClearGoal:         req.ClearGoal,
+		ClearParent:       req.ClearParent,
 	})
 	if err != nil {
 		response.Error(c, err)
@@ -104,7 +104,7 @@ func (h *TaskHandler) Get(c *gin.Context) {
 // List handles GET /tasks?goal_id=...&completed=true|false&deleted=...
 func (h *TaskHandler) List(c *gin.Context) {
 	userID, _ := middleware.CurrentUserID(c)
-	goalID, err := parseUUIDParam(c, "goal_id")
+	goalID, err := parseUUIDQuery(c, "goal_id")
 	if err != nil {
 		response.Error(c, err)
 		return
@@ -131,14 +131,12 @@ func (h *TaskHandler) List(c *gin.Context) {
 	}
 
 	f := service.TaskListFilter{
-		Completed: completed,
-		Deleted: boolPtrValue(deletedOnly),
+		Completed:      completed,
+		Deleted:        boolPtrValue(deletedOnly),
 		IncludeDeleted: boolPtrValue(includeDeleted),
-		NoGoal: boolPtrValue(noGoal),
+		NoGoal:         boolPtrValue(noGoal),
 	}
-	if goalID != uuid.Nil {
-		f.GoalID = &goalID
-	}
+	f.GoalID = goalID
 	out, err := h.svc.List(c.Request.Context(), userID, f)
 	if err != nil {
 		response.Error(c, err)
