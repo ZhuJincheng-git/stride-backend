@@ -18,7 +18,7 @@ import (
 
 type Harness struct {
 	App *app.App
-	DB *gorm.DB
+	DB  *gorm.DB
 }
 
 func New(t *testing.T) *Harness {
@@ -27,8 +27,8 @@ func New(t *testing.T) *Harness {
 	db, err := database.OpenSQLite()
 	require.NoError(t, err)
 	cfg := &config.Config{
-		AppEnv: config.Test,
-		JWTSecret: "test-secret",
+		AppEnv:          config.Test,
+		JWTSecret:       "test-secret",
 		JWTExpiresHours: 1,
 	}
 	return &Harness{App: app.New(cfg, db), DB: db}
@@ -54,7 +54,7 @@ func (h *Harness) Register(t *testing.T, username, email, password string) strin
 	t.Helper()
 	rec := h.Do(t, http.MethodPost, "/api/v1/auth/register", "", map[string]any{
 		"username": username,
-		"email": email,
+		"email":    email,
 		"password": password,
 	})
 	require.Equal(t, http.StatusCreated, rec.Code, rec.Body.String())
