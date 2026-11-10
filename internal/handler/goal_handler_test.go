@@ -78,6 +78,11 @@ func TestGoalLifecycle(t *testing.T) {
 	rec = h.Do(t, http.MethodPost, "/api/v1/goals/"+created.ID.String()+"/restore", token, nil)
 	require.Equal(t, http.StatusOK, rec.Code, rec.Body.String())
 
+	// list non-deleted again
+	rec = h.Do(t, http.MethodGet, "/api/v1/goals", token, nil)
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Len(t, testutil.DecodeData[[]model.Goal](t, rec), 1)
+
 	// permanent delete
 	rec = h.Do(t, http.MethodDelete, "/api/v1/goals/"+created.ID.String()+"/permanent", token, nil)
 	require.Equal(t, http.StatusNoContent, rec.Code)
