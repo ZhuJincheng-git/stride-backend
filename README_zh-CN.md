@@ -84,6 +84,6 @@ curl curl 127.0.0.1:8080/healthz # 预期返回：{"status":"ok"}
 
 示例 `.env` 见文件 [`.env.example`](.env.example)。
 
-## API
+## API 参考
 
 详见 [`docs/api.md`](docs/api.md)。

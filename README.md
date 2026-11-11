@@ -84,6 +84,6 @@ curl curl 127.0.0.1:8080/healthz # expected return: {"status":"ok"}
 
 See [`.env.example`](.env.example) for an example `.env`.
 
-## API
+## API Reference
 
 See [`docs/api.md`](docs/api.md).
